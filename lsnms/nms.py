@@ -44,7 +44,7 @@ def _nms(
 
     # Order by decreasing confidence
     order = np.argsort(scores)[::-1]
-    # Create a mask to keep track of boxes which have alread been visited
+    # Create a mask to keep track of boxes which have already been visited
     to_consider = np.full(len(boxes), True)
     for current_idx in order:
         # If already visited or discarded
@@ -59,7 +59,7 @@ def _nms(
 
         # Query the overlapping boxes and return their intersection
         # return only boxes which have at least one pixel of overlap with the box of interest
-        query, query_intersections = rtree.intersect(boxA, 1.0)
+        query, query_intersections = rtree.intersect(boxA, 0.0)
 
         for query_idx, overlap in zip(query, query_intersections):
             if not to_consider[query_idx]:
@@ -71,7 +71,8 @@ def _nms(
         keep.append(current_idx)
         to_consider[current_idx] = False
 
-    return np.array(keep)
+    keep = np.array(keep)
+    return np.argwhere(score_mask)[:, 0][keep]
 
 
 def nms(
